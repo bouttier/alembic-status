@@ -1,0 +1,29 @@
+partial_base = "c1"
+
+[initial]
+output = '''
+[gamma]
+  [ ] ┰ c1 migration c1
+  [ ] ┣┓ c2 migration c2
+  [ ]  ┸ c3b migration c3b
+  [ ] ┸ c3a migration c3a
+'''
+
+[partial]
+output = '''
+[gamma ×]
+  [x] ┰ c1 migration c1
+  [ ] ┣┓ c2 migration c2
+  [ ]  ┸ c3b migration c3b
+  [ ] ┸ c3a migration c3a
+Some branches are outdated, run 'autoupgrade' to upgrade them.
+'''
+
+[up_to_date]
+output = '''
+[gamma ✓]
+  [x] ┰ c1 migration c1
+  [x] ┣┓ c2 migration c2
+  [x]  ┸ c3b migration c3b
+  [x] ┸ c3a migration c3a
+'''

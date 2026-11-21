@@ -1,0 +1,32 @@
+partial_base = "m1"
+
+[initial]
+output = '''
+[feature]
+  [ ] ┰ f1 migration f1
+  [ ] ┸ f2 migration f2
+[main]
+  [ ] ┰ m1 migration m1
+  [ ] ┸ m2 migration m2
+'''
+
+[partial]
+output = '''
+[feature]
+  [ ] ┰ f1 migration f1
+  [ ] ┸ f2 migration f2
+[main ×]
+  [x] ┰ m1 migration m1
+  [ ] ┸ m2 migration m2
+Some branches are outdated, run 'autoupgrade' to upgrade them.
+'''
+
+[up_to_date]
+output = '''
+[feature ✓]
+  [x] ┰ f1 migration f1
+  [x] ┸ f2 migration f2
+[main ✓]
+  [x] ┰ m1 migration m1
+  [x] ┸ m2 migration m2
+'''

@@ -1,0 +1,41 @@
+partial_base = "p1"
+
+[initial]
+output = '''
+[audit]
+  [ ] ┰ r1 migration r1
+  [ ] ┸ r2 migration r2
+[primary]
+  [ ] ┰ p1 migration p1
+  [ ] ┸ p2 migration p2
+[reports]
+  [ ] ┰ q1 migration q1
+  [ ] ┸ q2 migration q2
+'''
+
+[partial]
+output = '''
+[audit]
+  [ ] ┰ r1 migration r1
+  [ ] ┸ r2 migration r2
+[primary ×]
+  [x] ┰ p1 migration p1
+  [ ] ┸ p2 migration p2
+[reports]
+  [ ] ┰ q1 migration q1
+  [ ] ┸ q2 migration q2
+Some branches are outdated, run 'autoupgrade' to upgrade them.
+'''
+
+[up_to_date]
+output = '''
+[audit ✓]
+  [x] ┰ r1 migration r1
+  [x] ┸ r2 migration r2
+[primary ✓]
+  [x] ┰ p1 migration p1
+  [x] ┸ p2 migration p2
+[reports ✓]
+  [x] ┰ q1 migration q1
+  [x] ┸ q2 migration q2
+'''

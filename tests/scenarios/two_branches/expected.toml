@@ -1,0 +1,32 @@
+partial_base = "a1"
+
+[initial]
+output = '''
+[alpha]
+  [ ] ┰ a1 migration a1
+  [ ] ┸ a2 migration a2
+[beta]
+  [ ] ┰ b1 migration b1
+  [ ] ┸ b2 migration b2
+'''
+
+[partial]
+output = '''
+[alpha ×]
+  [x] ┰ a1 migration a1
+  [ ] ┸ a2 migration a2
+[beta]
+  [ ] ┰ b1 migration b1
+  [ ] ┸ b2 migration b2
+Some branches are outdated, run 'autoupgrade' to upgrade them.
+'''
+
+[up_to_date]
+output = '''
+[alpha ✓]
+  [x] ┰ a1 migration a1
+  [x] ┸ a2 migration a2
+[beta ✓]
+  [x] ┰ b1 migration b1
+  [x] ┸ b2 migration b2
+'''

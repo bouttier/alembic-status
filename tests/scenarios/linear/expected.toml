@@ -1,0 +1,26 @@
+partial_base = "l1"
+
+[initial]
+output = '''
+[main]
+  [ ] ┰ l1 migration l1
+  [ ] ┃ l2 migration l2
+  [ ] ┸ l3 migration l3
+'''
+
+[partial]
+output = '''
+[main ×]
+  [x] ┰ l1 migration l1
+  [ ] ┃ l2 migration l2
+  [ ] ┸ l3 migration l3
+Some branches are outdated, run 'autoupgrade' to upgrade them.
+'''
+
+[up_to_date]
+output = '''
+[main ✓]
+  [x] ┰ l1 migration l1
+  [x] ┃ l2 migration l2
+  [x] ┸ l3 migration l3
+'''

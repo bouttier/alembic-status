@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "alembic-status"
+version = "1.0.0"
+description = "Show alembic branches status and upgrade outdated branches, standalone or as Flask-Migrate sub-commands."
+readme = "README.md"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = ["alembic>=1.13", "click>=8.1", "sqlalchemy>=2.0"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Framework :: Flask",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
+    "Topic :: Database",
+    "Topic :: Database :: Front-Ends",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/bouttier/alembic-status"
+Repository = "https://github.com/bouttier/alembic-status"
+
+[project.optional-dependencies]
+flask = ["flask>=2.2", "flask-migrate>=4.0", "flask-sqlalchemy>=3.0"]
+
+[project.scripts]
+alembic-status = "alembic_status.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.5"]
+flask = ["alembic-status[flask]"]
+
+[tool.ruff]
+line-length = 100
+# Scenario migrations are alembic projects, kept in the format alembic generates.
+extend-exclude = ["tests/scenarios"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

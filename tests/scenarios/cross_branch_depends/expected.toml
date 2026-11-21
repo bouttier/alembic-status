@@ -1,0 +1,32 @@
+partial_base = "d1"
+
+[initial]
+output = '''
+[delta]
+  [ ] ┰ d1 migration d1
+  [ ] ┸ d2 migration d2
+[epsilon]
+  [ ] ┰ e1 migration e1
+  [ ] ┸ e2 migration e2
+'''
+
+[partial]
+output = '''
+[delta ×]
+  [x] ┰ d1 migration d1
+  [ ] ┸ d2 migration d2
+[epsilon]
+  [ ] ┰ e1 migration e1
+  [ ] ┸ e2 migration e2
+Some branches are outdated, run 'autoupgrade' to upgrade them.
+'''
+
+[up_to_date]
+output = '''
+[delta ✓]
+  [x] ┰ d1 migration d1
+  [x] ┸ d2 migration d2
+[epsilon ✓]
+  [x] ┰ e1 migration e1
+  [x] ┸ e2 migration e2
+'''

@@ -1,0 +1,29 @@
+name: Publish
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    name: Build and publish
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Check that the tag matches the project version
+        run: test "v$(uv version --short)" = "${GITHUB_REF_NAME}"
+      - run: uv build
+      - name: Publish
+        env:
+          UV_PUBLISH_URL: ${{ vars.PUBLISH_URL || 'https://test.pypi.org/legacy/' }}
+          UV_PUBLISH_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: uv publish --trusted-publishing never
