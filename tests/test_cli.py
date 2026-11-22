@@ -59,11 +59,20 @@ def test_url_option_overrides_config(make_scenario, tmp_path):
     assert project.applied() == {"l1"}
 
 
-def test_missing_url_is_a_usage_error(make_scenario):
+def test_status_reads_the_database_chosen_by_env_py(make_scenario, tmp_path):
     project = make_scenario("linear")
-    project.ini.write_text(f"[alembic]\nscript_location = {project.root}\n")
+    env_db = tmp_path / "env.db"
+    env_py = project.root / "env.py"
+    env_py.write_text(
+        env_py.read_text().replace(
+            'url = context.config.get_main_option("sqlalchemy.url")',
+            f'url = "sqlite:///{env_db}"',
+        )
+    )
+    project.upgrade("l1")
 
     result = CliRunner().invoke(main, ["-c", str(project.ini), "status"])
 
-    assert result.exit_code == 2
-    assert "No database URL" in result.output
+    assert result.exit_code == 0, result.output
+    assert "  [x] " in result.output
+    assert project.applied() == set()

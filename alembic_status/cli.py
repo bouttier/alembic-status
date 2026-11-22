@@ -1,28 +1,10 @@
 """Standalone ``alembic-status`` command, usable without Flask."""
 
-from collections.abc import Iterator
-from contextlib import contextmanager
-
 import click
 from alembic.config import Config
-from sqlalchemy import create_engine
-from sqlalchemy.engine import Connection
 
 from alembic_status.core import autoupgrade as run_autoupgrade
 from alembic_status.core import get_status
-
-
-@contextmanager
-def _connect(config: Config) -> Iterator[Connection]:
-    url = config.get_main_option("sqlalchemy.url")
-    if not url:
-        raise click.UsageError("No database URL: set sqlalchemy.url in the config or pass --url.")
-    engine = create_engine(url)
-    try:
-        with engine.connect() as connection:
-            yield connection
-    finally:
-        engine.dispose()
 
 
 @click.group(invoke_without_command=True)
@@ -67,14 +49,12 @@ def main(ctx: click.Context, config_file: str, directory: str | None, url: str |
 @click.pass_obj
 def status(config: Config, show_dependencies: bool, branches: tuple[str, ...]) -> None:
     """Show all revisions sorted by branches."""
-    with _connect(config) as connection:
-        report = get_status(
-            config,
-            connection,
-            branches=branches,
-            show_dependencies=show_dependencies,
-            style=click.style,
-        )
+    report = get_status(
+        config,
+        branches=branches,
+        show_dependencies=show_dependencies,
+        style=click.style,
+    )
     click.echo(report.text)
 
 
@@ -95,8 +75,7 @@ def status(config: Config, show_dependencies: bool, branches: tuple[str, ...]) -
 @click.pass_obj
 def autoupgrade(config: Config, sql: bool, tag: str | None, x_arg: tuple[str, ...]) -> None:
     """Upgrade all branches to head."""
-    with _connect(config) as connection:
-        run_autoupgrade(config, connection, sql=sql, tag=tag, x_args=x_arg)
+    run_autoupgrade(config, sql=sql, tag=tag, x_args=x_arg)
 
 
 if __name__ == "__main__":

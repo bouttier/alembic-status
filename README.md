@@ -58,7 +58,7 @@ Global options:
 | --- | --- |
 | `-c, --config` | alembic configuration file (default: `alembic.ini`) |
 | `-d, --directory` | overrides `script_location` |
-| `--url` | overrides `sqlalchemy.url` for the connection used by `status` and `autoupgrade` |
+| `--url` | overrides `sqlalchemy.url`, which `env.py` reads to connect (used by `status` and `autoupgrade`) |
 
 `autoupgrade` accepts `--sql`, `--tag` and `-x`, with the same meaning as in alembic.
 
@@ -130,14 +130,16 @@ from sqlalchemy import create_engine
 from alembic_status import autoupgrade, get_status
 
 config = Config("alembic.ini")
-engine = create_engine("postgresql://user:password@localhost/app")
 
-with engine.connect() as connection:
-    report = get_status(config, connection, show_dependencies=True)
-    print(report.text)
-    if report.outdated:
-        autoupgrade(config, connection)
+report = get_status(config, show_dependencies=True)
+print(report.text)
+if report.outdated:
+    autoupgrade(config)
 ```
+
+Without a connection, `get_status` and `autoupgrade` read the database through `env.py`, the
+same one that runs the migrations. To use an existing connection instead, pass it as the second
+argument (for example `get_status(config, connection)`).
 
 `get_status` returns a `StatusReport` (`text` and `outdated`). The `style` parameter allows
 coloring the output, for example with `click.style`. Without `style`, the output is plain text.
@@ -187,9 +189,6 @@ These limitations are checked at startup: an unsupported situation raises an exp
    therefore be labeled.
 4. **Upgrades are not atomic across branches.** `autoupgrade` runs one `command.upgrade` per
    unapplied head. If one fails, the previous ones remain applied.
-5. **The database read must be the one used by `env.py`.** `status` and `autoupgrade` read the
-   state through the provided connection (`sqlalchemy.url` or `--url`), while `autoupgrade`
-   runs the migrations through your `env.py`. Both must point to the same database.
 
 ## Tests
 

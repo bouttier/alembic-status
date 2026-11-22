@@ -10,6 +10,7 @@ from typing import Any
 from alembic import command
 from alembic.config import Config
 from alembic.migration import MigrationContext
+from alembic.runtime.environment import EnvironmentContext
 from alembic.script import ScriptDirectory
 from alembic.script.base import Script
 from sqlalchemy.engine import Connection
@@ -184,20 +185,43 @@ class _StatusRenderer:
                 )
 
 
+def _applied_revisions(
+    config: Config, script: ScriptDirectory, connection: Connection | None
+) -> set[Script]:
+    """Revisions applied in the database.
+
+    Without a connection, the database is the one opened by ``env.py``, as ``alembic current``
+    does, so the status matches what ``autoupgrade`` and ``upgrade`` act on.
+    """
+    heads: list[str] = []
+    if connection is None:
+
+        def read_heads(current: tuple[str, ...], _context: MigrationContext) -> list[Any]:
+            heads.extend(current)
+            return []
+
+        with EnvironmentContext(config, script, fn=read_heads, dont_mutate=True):
+            script.run_env()
+    else:
+        heads.extend(MigrationContext.configure(connection).get_current_heads())
+    return set(script.iterate_revisions(tuple(heads), "base"))
+
+
 def get_status(
     config: Config,
-    connection: Connection,
+    connection: Connection | None = None,
     *,
     branches: Iterable[str] = (),
     show_dependencies: bool = False,
     style: Style = _no_style,
 ) -> StatusReport:
-    """Render all revisions grouped by branch, marking the ones applied in the database."""
+    """Render all revisions grouped by branch, marking the ones applied in the database.
+
+    The database is read through ``connection`` if given, otherwise through ``env.py``.
+    """
     script = ScriptDirectory.from_config(config)
     _check_branches(script)
-    migration_context = MigrationContext.configure(connection)
-    current_heads = migration_context.get_current_heads()
-    applied = set(script.iterate_revisions(current_heads, "base"))
+    applied = _applied_revisions(config, script, connection)
 
     bases: dict[str, Script] = {}
     for base in sorted((script.get_revision(b) for b in script.get_bases()), key=_branch_label):
@@ -281,7 +305,7 @@ def get_status(
 
 def autoupgrade(
     config: Config,
-    connection: Connection,
+    connection: Connection | None = None,
     *,
     sql: bool = False,
     tag: str | None = None,
@@ -291,12 +315,12 @@ def autoupgrade(
 
     A branch is started when its base is applied. A branch can fork, so each of its heads that
     is not applied is upgraded in turn. Returns the upgraded heads in upgrade order.
+    The applied revisions are read through ``connection`` if given, otherwise through ``env.py``.
     """
     set_x_args(config, x_args)
     script = ScriptDirectory.from_config(config)
     _check_branches(script)
-    current_heads = MigrationContext.configure(connection).get_current_heads()
-    applied = set(script.iterate_revisions(current_heads, "base"))
+    applied = _applied_revisions(config, script, connection)
     targets = _outdated_targets(script, applied)
     for target in targets:
         command.upgrade(config, target, sql=sql, tag=tag)
