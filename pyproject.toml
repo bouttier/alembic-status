@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "alembic-status"
-version = "1.0.0"
+version = "1.1.0"
 description = "Show alembic branches status and upgrade outdated branches, standalone or as Flask-Migrate sub-commands."
 readme = "README.md"
 license = "GPL-3.0-or-later"
@@ -12,21 +12,21 @@ license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = ["alembic>=1.13", "click>=8.1", "sqlalchemy>=2.0"]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Console",
-    "Framework :: Flask",
-    "Intended Audience :: Developers",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-    "Programming Language :: Python :: 3.15",
-    "Topic :: Database",
-    "Topic :: Database :: Front-Ends",
-    "Typing :: Typed",
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Framework :: Flask",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
+  "Topic :: Database",
+  "Topic :: Database :: Front-Ends",
+  "Typing :: Typed",
 ]
 
 [project.urls]
